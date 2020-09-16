@@ -39,9 +39,13 @@ async function main() {
 
     console.log("Balancing...")
     
-    const balancedWeights = balanceWeights(studentWeights);
+    const results = balanceWeights(studentWeights);
 
-    console.log(balancedWeights);
+    console.log("\nResults:")
+
+    for (let result of results) {
+        drawStudentResult(result);
+    }
 }
 
 async function getParams() {
@@ -98,7 +102,6 @@ function testStudents(params) {
     let i = 1;
     while (i <= params.totalStuds) {
         const studentWeight = testStudentNo(i, params);
-        console.log(`Raw weight for student #${i} is ${studentWeight}`)
         studentWeights.push({
             studentNo: i,
             studentName: priezviska[i],
@@ -157,7 +160,7 @@ function logChance(name, weight, isValid) {
 }
 
 function getStudentWeight() {
-    let studentWeight = 0;
+    let studentWeight = 1; // Start with 1 as anyone can get to hell
 
     for (const chance of chances) {
         if (chance.isValid) {
@@ -166,6 +169,11 @@ function getStudentWeight() {
     }
 
     return studentWeight;
+}
+
+function drawStudentResult(studentResult) {
+    const bar = "▓".repeat(studentResult.weight / (1/100));
+    console.log(`#${studentResult.studentNo} ${studentResult.studentName}\t${studentResult.weight}\t${bar}`);
 }
 
 main();
