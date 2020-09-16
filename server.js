@@ -121,7 +121,12 @@ function testStudentNo(studIndex, params) {
     const d = params.dayNum;
     const m = params.monthNum;
 
+    console.log(`Testing #${studIndex} ${priezviska[studIndex]}...`);
+
     // Now let's check if I'm gonna go to hell
+
+    //? Basics
+    // If student # is the day or month
     logChance('same as day', 1, studIndex === d);
     logChance('same as month', 1, studIndex === m);
     
@@ -130,24 +135,46 @@ function testStudentNo(studIndex, params) {
     logChance('day - month', 1, studIndex === d-m);
     logChance('month - day', 1, studIndex === m-d);
     logChance('day * month', 1, studIndex === d*m); // Almost always out of range but whatever
-    logChance('day / month', .5, studIndex === Math.round(d/m)); // We do both round and floor because you never know
-    logChance('day / month', .5, studIndex === Math.floor(d/m)); // Half the weight to not double up at number like 4.25
-    logChance('month / day', .5, studIndex === Math.round(m/d));
-    logChance('month / day', .5, studIndex === Math.floor(m/d));
+    logChance('day / month rounded', .5, studIndex === Math.round(d/m)); // We do both round and floor because you never know
+    logChance('day / month floored', .5, studIndex === Math.floor(d/m)); // Half the weight to not double up at number like 4.25
+    logChance('month / day rounded', .5, studIndex === Math.round(m/d));
+    logChance('month / day floored', .5, studIndex === Math.floor(m/d));
     
+    //? Digit SUM
     // Digit sum of day and month
-    logChance('ds(day)', 1, studIndex === ds(d));
-    logChance('ds(month)', 1, studIndex === ds(m));
+    logChance('da(day)', 1, studIndex === da(d));
+    logChance('da(month)', 1, studIndex === da(m));
 
     // Digit sum of above operations
+    logChance('da(day+month)', 1.5, studIndex === da(d+m)); // Used 1 time
+    logChance('da(day-month)', 1, studIndex === da(d-m));
+    logChance('da(month-day)', 1, studIndex === da(m-d));
+
+    // Digit sum of day combined with month
+    logChance('da(day) + month', 1, studIndex === da(d) + m); 
+    logChance('da(day) - month', 1, studIndex === da(d) - m);
+
+    //? Digit SUB
+    // Digit sub of day and month not present since it does not make sense
+
+    // Digit sub of above operations
     logChance('ds(day+month)', 1, studIndex === ds(d+m));
     logChance('ds(day-month)', 1, studIndex === ds(d-m));
     logChance('ds(month-day)', 1, studIndex === ds(m-d));
 
+    //? Digit SUB REVERSED
+    // Digit sub reversed of day and month not present since it does not make sense
+
+    // Digit sub reversed of above operations
+    logChance('dsr(day+month)', 1, studIndex === dsr(d+m));
+    logChance('dsr(day-month)', 1, studIndex === dsr(d-m));
+    logChance('dsr(month-day)', 1, studIndex === dsr(m-d));
+
+
     return getStudentWeight();
 }
 
-function ds(num) {
+function da(num) {
     num = num.toString();
     numArray = num.split('');
 
@@ -155,6 +182,32 @@ function ds(num) {
 
     for (const digit of numArray) {
         sum += parseInt(digit);
+    }
+
+    return sum;
+}
+
+function ds(num) {
+    num = num.toString();
+    numArray = num.split('');
+
+    let sum = parseInt(numArray.shift()); // Remove the first digit and store it in sum
+
+    for (const digit of numArray) {
+        sum -= parseInt(digit);
+    }
+
+    return sum;
+}
+
+function dsr(num) {
+    num = num.toString();
+    numArray = num.split('').reverse();
+
+    let sum = parseInt(numArray.shift()); // Remove the first digit and store it in sum
+
+    for (const digit of numArray) {
+        sum -= parseInt(digit);
     }
 
     return sum;
@@ -173,6 +226,7 @@ function getStudentWeight() {
 
     for (const chance of chances) {
         if (chance.isValid) {
+            console.log(`[tripped] "${chance.name}" chance check`)
             studentWeight += chance.weight;
         }
     }
