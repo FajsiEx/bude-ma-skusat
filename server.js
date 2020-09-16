@@ -1,5 +1,35 @@
 const input = require("input");
 
+const priezviska = [
+    "Null",
+    "Baranovsky",
+    "Brazda",
+    "Bucko",
+    "Cavajda",
+    "Darocz",
+    "Dinusova",
+    "Gasparik",
+    "Holarek",
+    "Chornyi",
+    "Jegh",
+    "Katona",
+    "Kovacs",
+    "Losonsky",
+    "Magdin",
+    "Magyerka",
+    "Mesko",
+    "Rakus",
+    "Reznak",
+    "Sith",
+    "Smolar",
+    "Semberova",
+    "Toth",
+    "Turcar",
+    "Valnicek",
+    "Varmuza",
+    "Vodrazka"
+];
+
 async function main() {
     const params = await getParams();
 
@@ -15,6 +45,12 @@ async function main() {
 }
 
 async function getParams() {
+    return {
+        totalStuds: 26,
+        dayNum: 17,
+        monthNum: 9
+    }
+
     let totalStuds = await input.text('Vsetkych studentov:');
 
     totalStuds = parseInt(totalStuds);
@@ -65,6 +101,7 @@ function testStudents(params) {
         console.log(`Raw weight for student #${i} is ${studentWeight}`)
         studentWeights.push({
             studentNo: i,
+            studentName: priezviska[i],
             weight: studentWeight
         });
         i++;
@@ -78,11 +115,37 @@ let chances = []
 function testStudentNo(studIndex, params) {
     chances = [];
 
+    const d = params.dayNum;
+    const m = params.monthNum;
+
     // Now let's check if I'm gonna go to hell
-    logChance('same as day', 1, studIndex === params.dayNum);
-    logChance('same as month', 0.5, studIndex === params.monthNum);
+    logChance('same as day', 1, studIndex === d);
+    logChance('same as month', 1, studIndex === m);
+    
+    // Basic arithmetics
+    logChance('day + month', 1, studIndex === d+m);
+    logChance('day - month', 1, studIndex === d-m);
+    logChance('month - day', 1, studIndex === m-d);
+    
+    // Digit sum of above operations
+    logChance('ds(day+month)', 1, studIndex === ds(d+m));
+    logChance('ds(day-month)', 1, studIndex === ds(d-m));
+    logChance('ds(month-day)', 1, studIndex === ds(m-d));
 
     return getStudentWeight();
+}
+
+function ds(num) {
+    num = num.toString();
+    numArray = num.split('');
+
+    let sum = 0;
+
+    for (const digit of numArray) {
+        sum += parseInt(digit);
+    }
+
+    return sum;
 }
 
 function logChance(name, weight, isValid) {
