@@ -129,7 +129,16 @@ function testStudentNo(studIndex, params) {
     logChance('day + month', 1, studIndex === d+m);
     logChance('day - month', 1, studIndex === d-m);
     logChance('month - day', 1, studIndex === m-d);
+    logChance('day * month', 1, studIndex === d*m); // Almost always out of range but whatever
+    logChance('day / month', .5, studIndex === Math.round(d/m)); // We do both round and floor because you never know
+    logChance('day / month', .5, studIndex === Math.floor(d/m)); // Half the weight to not double up at number like 4.25
+    logChance('month / day', .5, studIndex === Math.round(m/d));
+    logChance('month / day', .5, studIndex === Math.floor(m/d));
     
+    // Digit sum of day and month
+    logChance('ds(day)', 1, studIndex === ds(d));
+    logChance('ds(month)', 1, studIndex === ds(m));
+
     // Digit sum of above operations
     logChance('ds(day+month)', 1, studIndex === ds(d+m));
     logChance('ds(day-month)', 1, studIndex === ds(d-m));
@@ -173,7 +182,9 @@ function getStudentWeight() {
 
 function drawStudentResult(studentResult) {
     const bar = "▓".repeat(studentResult.weight / (1/100));
-    console.log(`#${studentResult.studentNo} ${studentResult.studentName}\t${studentResult.weight}\t${bar}`);
+    const weightPerc = Math.round(studentResult.weight * 100000) / 1000;
+
+    console.log(`#${studentResult.studentNo} ${studentResult.studentName}\t${weightPerc}%\t${bar}`);
 }
 
 main();
