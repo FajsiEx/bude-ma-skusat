@@ -1,0 +1,23 @@
+{
+  "name": "bude-ma-skusat",
+  "version": "1.0.0",
+  "description": "Vypocita s akou velkou sancou ma bude ucitel skusat pokial vybera podla datumu",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FajsiEx/bude-ma-skusat.git"
+  },
+  "author": "FajsiEx",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FajsiEx/bude-ma-skusat/issues"
+  },
+  "homepage": "https://github.com/FajsiEx/bude-ma-skusat#readme",
+  "dependencies": {
+    "input": "^1.0.1"
+  }
+}
