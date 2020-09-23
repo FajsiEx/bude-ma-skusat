@@ -51,7 +51,7 @@ async function main() {
 async function getParams() {
     return {
         totalStuds: 26,
-        dayNum: 17,
+        dayNum: 23,
         monthNum: 9
     }
 
@@ -153,22 +153,25 @@ function testStudentNo(studIndex, params) {
     // Digit sum of day combined with month
     logChance('da(day) + month', 1, studIndex === da(d) + m); 
     logChance('da(day) - month', 1, studIndex === da(d) - m);
-
+    
     //? Digit SUB
     // Digit sub of day and month not present since it does not make sense
-
+    
     // Digit sub of above operations
     logChance('ds(day+month)', 1, studIndex === ds(d+m));
     logChance('ds(day-month)', 1, studIndex === ds(d-m));
     logChance('ds(month-day)', 1, studIndex === ds(m-d));
-
+    
     //? Digit SUB REVERSED
     // Digit sub reversed of day and month not present since it does not make sense
-
+    
     // Digit sub reversed of above operations
     logChance('dsr(day+month)', 1, studIndex === dsr(d+m));
     logChance('dsr(day-month)', 1, studIndex === dsr(d-m));
     logChance('dsr(month-day)', 1, studIndex === dsr(m-d));
+    
+    // Sum all the digits in the date
+    logChance('Add all digits in the date', 1, studIndex === da(d) + da(m) );
 
 
     return getStudentWeight();
@@ -183,6 +186,8 @@ function da(num) {
     for (const digit of numArray) {
         sum += parseInt(digit);
     }
+
+    console.log(`[DEBUG] digit addition of ${num} is ${sum}`);
 
     return sum;
 }
