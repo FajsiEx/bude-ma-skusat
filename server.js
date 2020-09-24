@@ -51,7 +51,7 @@ async function main() {
 async function getParams() {
     return {
         totalStuds: 26,
-        dayNum: 23,
+        dayNum: 24,
         monthNum: 9
     }
 
