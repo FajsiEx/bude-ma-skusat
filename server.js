@@ -51,11 +51,12 @@ async function main() {
 }
 
 async function getParams() {
-    return {
-        totalStuds: 26,
-        dayNum: 30,
-        monthNum: 9
-    }
+    // Force inputs if necessary
+    // return {
+    //     totalStuds: 26,
+    //     dayNum: 30,
+    //     monthNum: 9
+    // }
 
     let totalStuds = await input.text('Vsetkych studentov:');
 
