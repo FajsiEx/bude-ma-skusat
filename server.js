@@ -39,19 +39,21 @@ async function main() {
 
     console.log("Balancing...")
     
-    const results = balanceWeights(studentWeights);
+    const resultsByNo = balanceWeights(studentWeights);
 
-    console.log("\nResults:")
+    console.log("\nResults")
 
-    for (let result of results) {
-        drawStudentResult(result);
-    }
+    const resultsByWeight = JSON.parse(JSON.stringify(resultsByNo)).sort((a, b) => {
+        return b.weight - a.weight;
+    });
+
+    drawResults(resultsByNo, resultsByWeight);
 }
 
 async function getParams() {
     return {
         totalStuds: 26,
-        dayNum: 24,
+        dayNum: 30,
         monthNum: 9
     }
 
@@ -140,21 +142,24 @@ function testStudentNo(studIndex, params) {
     logChance('month / day rounded', .5, studIndex === Math.round(m/d));
     logChance('month / day floored', .5, studIndex === Math.floor(m/d));
     
-    //? Digit SUM
-    // Digit sum of day and month
+    //? Digit ADDITION
+    // Digit addition of day and month
     logChance('da(day)', 1, studIndex === da(d));
     logChance('da(month)', 1, studIndex === da(m));
-
-    // Digit sum of above operations
-    logChance('da(day+month)', 1.5, studIndex === da(d+m)); // Used 1 time
+    
+    // Digit addition of above operations
+    logChance('da(day+month)', 1.5, studIndex === da(d+m)); // Used 2 times
     logChance('da(day-month)', 1, studIndex === da(d-m));
     logChance('da(month-day)', 1, studIndex === da(m-d));
-
-    // Digit sum of day combined with month
+    
+    // Digit addition of day combined with month
     logChance('da(day) + month', 1, studIndex === da(d) + m); 
     logChance('da(day) - month', 1, studIndex === da(d) - m);
+
+    // Just add all the digits
+    logChance('Add all digits in the date', 1, studIndex === da(d) + da(m) );
     
-    //? Digit SUB
+    //? Digit SUBTRACTION
     // Digit sub of day and month not present since it does not make sense
     
     // Digit sub of above operations
@@ -169,10 +174,6 @@ function testStudentNo(studIndex, params) {
     logChance('dsr(day+month)', 1, studIndex === dsr(d+m));
     logChance('dsr(day-month)', 1, studIndex === dsr(d-m));
     logChance('dsr(month-day)', 1, studIndex === dsr(m-d));
-    
-    // Sum all the digits in the date
-    logChance('Add all digits in the date', 1, studIndex === da(d) + da(m) );
-
 
     return getStudentWeight();
 }
@@ -186,8 +187,6 @@ function da(num) {
     for (const digit of numArray) {
         sum += parseInt(digit);
     }
-
-    console.log(`[DEBUG] digit addition of ${num} is ${sum}`);
 
     return sum;
 }
@@ -239,11 +238,35 @@ function getStudentWeight() {
     return studentWeight;
 }
 
-function drawStudentResult(studentResult) {
-    const bar = "▓".repeat(studentResult.weight / (1/100));
-    const weightPerc = Math.round(studentResult.weight * 100000) / 1000;
+function drawResults(resultsByNo, resultsByWeight) {
+    let i = 0;
+    while (i < resultsByNo.length) {
+        const byNoGraphic = getStudentResultGraphic(resultsByNo[i]);
+        const byWeightGraphic = getStudentResultGraphic(resultsByWeight[i]);
 
-    console.log(`#${studentResult.studentNo} ${studentResult.studentName}\t${weightPerc}%\t${bar}`);
+        const extraSpaces = " ".repeat(75 - byNoGraphic.length);
+
+
+        console.log(`${byNoGraphic}${extraSpaces}${byWeightGraphic}`);
+        i++;
+    }
+}
+
+function getStudentResultGraphic(studentResult) {
+    const bar = "▓".repeat(studentResult.weight / (1/100));
+    let weightPerc = (Math.round(studentResult.weight * 100000) / 1000);
+    let weightPercStr = (Math.round(studentResult.weight * 100000) / 1000).toFixed(3);
+    weightPercStr = (weightPerc < 10) ? " " + weightPercStr : weightPercStr;
+
+    const extraSpaces = " ".repeat(
+        30 -
+        1 -
+        studentResult.studentNo.toString().length -
+        1 - 
+        studentResult.studentName.length
+    );
+
+    return `#${studentResult.studentNo} ${studentResult.studentName}${extraSpaces}${weightPercStr}% ${bar}`;
 }
 
 main();
