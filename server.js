@@ -1,5 +1,7 @@
 const input = require("input");
 
+// Varmuza, Gasparik, Toth
+
 const priezviska = [
     "Null",
     "Baranovsky",
@@ -30,15 +32,21 @@ const priezviska = [
     "Vodrazka"
 ];
 
+const alreadyFucked = [
+    25,
+    7,
+    22
+]
+
 async function main() {
     const params = await getParams();
 
     console.log("Params get. Testing students for raw weights...")
-    
+
     const studentWeights = testStudents(params);
 
     console.log("Balancing...")
-    
+
     const resultsByNo = balanceWeights(studentWeights);
 
     console.log("\nResults")
@@ -61,21 +69,21 @@ async function getParams() {
     let totalStuds = await input.text('Vsetkych studentov:');
 
     totalStuds = parseInt(totalStuds);
-    if (!totalStuds) { throw("Not a number"); }
+    if (!totalStuds) { throw ("Not a number"); }
 
 
 
     let dayNum = await input.text('Den:');
 
     dayNum = parseInt(dayNum);
-    if (!dayNum) { throw("Not a number"); }
+    if (!dayNum) { throw ("Not a number"); }
 
 
 
     let monthNum = await input.text('Mesiac:');
 
     monthNum = parseInt(monthNum);
-    if (!monthNum) { throw("Not a number"); }
+    if (!monthNum) { throw ("Not a number"); }
 
     return {
         totalStuds,
@@ -132,51 +140,57 @@ function testStudentNo(studIndex, params) {
     // If student # is the day or month
     logChance('same as day', 1, studIndex === d);
     logChance('same as month', 1, studIndex === m);
-    
+
     // Basic arithmetics
-    logChance('day + month', 1, studIndex === d+m);
-    logChance('day - month', 1, studIndex === d-m);
-    logChance('month - day', 1, studIndex === m-d);
-    logChance('day * month', 1, studIndex === d*m); // Almost always out of range but whatever
-    logChance('day / month rounded', .5, studIndex === Math.round(d/m)); // We do both round and floor because you never know
-    logChance('day / month floored', .5, studIndex === Math.floor(d/m)); // Half the weight to not double up at number like 4.25
-    logChance('month / day rounded', .5, studIndex === Math.round(m/d));
-    logChance('month / day floored', .5, studIndex === Math.floor(m/d));
-    
+    logChance('day + month', 1, studIndex === d + m);
+    logChance('day - month', 1, studIndex === d - m);
+    logChance('month - day', 1, studIndex === m - d);
+    logChance('day * month', 1, studIndex === d * m); // Almost always out of range but whatever
+    logChance('day / month rounded', .5, studIndex === Math.round(d / m)); // We do both round and floor because you never know
+    logChance('day / month floored', .5, studIndex === Math.floor(d / m)); // Half the weight to not double up at number like 4.25
+    logChance('month / day rounded', .5, studIndex === Math.round(m / d));
+    logChance('month / day floored', .5, studIndex === Math.floor(m / d));
+
     //? Digit ADDITION
     // Digit addition of day and month
     logChance('da(day)', 1, studIndex === da(d));
     logChance('da(month)', 1, studIndex === da(m));
-    
+
     // Digit addition of above operations
-    logChance('da(day+month)', 1.5, studIndex === da(d+m)); // Used 2 times
-    logChance('da(day-month)', 1, studIndex === da(d-m));
-    logChance('da(month-day)', 1, studIndex === da(m-d));
-    
+    logChance('da(day+month)', 1.5, studIndex === da(d + m)); // Used 2 times
+    logChance('da(day-month)', 1, studIndex === da(d - m));
+    logChance('da(month-day)', 1, studIndex === da(m - d));
+
     // Digit addition of day combined with month
-    logChance('da(day) + month', 1, studIndex === da(d) + m); 
+    logChance('da(day) + month', 1, studIndex === da(d) + m);
     logChance('da(day) - month', 1, studIndex === da(d) - m);
 
     // Just add all the digits
-    logChance('Add all digits in the date', 1, studIndex === da(d) + da(m) );
-    
+    logChance('Add all digits in the date', 1, studIndex === da(d) + da(m));
+
     //? Digit SUBTRACTION
     // Digit sub of day and month not present since it does not make sense
-    
+
     // Digit sub of above operations
-    logChance('ds(day+month)', 1, studIndex === ds(d+m));
-    logChance('ds(day-month)', 1, studIndex === ds(d-m));
-    logChance('ds(month-day)', 1, studIndex === ds(m-d));
-    
+    logChance('ds(day+month)', 1, studIndex === ds(d + m));
+    logChance('ds(day-month)', 1, studIndex === ds(d - m));
+    logChance('ds(month-day)', 1, studIndex === ds(m - d));
+
     //? Digit SUB REVERSED
     // Digit sub reversed of day and month not present since it does not make sense
-    
-    // Digit sub reversed of above operations
-    logChance('dsr(day+month)', 1, studIndex === dsr(d+m));
-    logChance('dsr(day-month)', 1, studIndex === dsr(d-m));
-    logChance('dsr(month-day)', 1, studIndex === dsr(m-d));
 
-    return getStudentWeight();
+    // Digit sub reversed of above operations
+    logChance('dsr(day+month)', 1, studIndex === dsr(d + m));
+    logChance('dsr(day-month)', 1, studIndex === dsr(d - m));
+    logChance('dsr(month-day)', 1, studIndex === dsr(m - d));
+
+    let studentWeight = getStudentWeight();
+    for (const fedStudIndex of alreadyFucked) {
+        if (studIndex === fedStudIndex) {
+            studentWeight = studentWeight / 10;
+        }
+    }
+    return studentWeight;
 }
 
 function da(num) {
@@ -254,7 +268,7 @@ function drawResults(resultsByNo, resultsByWeight) {
 }
 
 function getStudentResultGraphic(studentResult) {
-    const bar = "▓".repeat(studentResult.weight / (1/100));
+    const bar = "▓".repeat(studentResult.weight / (1 / 100));
     let weightPerc = (Math.round(studentResult.weight * 100000) / 1000);
     let weightPercStr = (Math.round(studentResult.weight * 100000) / 1000).toFixed(3);
     weightPercStr = (weightPerc < 10) ? " " + weightPercStr : weightPercStr;
@@ -263,7 +277,7 @@ function getStudentResultGraphic(studentResult) {
         30 -
         1 -
         studentResult.studentNo.toString().length -
-        1 - 
+        1 -
         studentResult.studentName.length
     );
 
